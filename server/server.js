@@ -4,6 +4,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
@@ -11,9 +13,15 @@ const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-change-me';
+const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT_NAME);
+const JWT_SECRET = process.env.JWT_SECRET || (isProduction ? null : 'dev-only-secret-change-me');
 
-app.use(cors());
+if (isProduction && (!JWT_SECRET || JWT_SECRET.length < 32)) {
+  throw new Error('JWT_SECRET must be set to a random value of at least 32 characters in production.');
+}
+
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || (isProduction ? false : true) }));
 app.use(express.json({ limit: '2mb' }));
 
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
@@ -22,7 +30,19 @@ const PHOTO_DIR = path.join(UPLOADS_DIR, 'photo');
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+app.get('/health', (req, res) => {
+  res.json({ ok: true, service: 'lba-portfolio' });
+});
+
 // ---------- Auth ----------
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again later.' }
+});
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, username: user.username }, JWT_SECRET, { expiresIn: '12h' });
@@ -40,7 +60,7 @@ function requireAuth(req, res, next) {
   }
 }
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', loginLimiter, (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return res.status(400).json({ error: 'Username and password required.' });
 
@@ -85,6 +105,9 @@ app.put('/api/content', requireAuth, (req, res) => {
   const allowedKeys = ['sidebar', 'photo', 'hero', 'experience', 'competencies', 'education', 'contact'];
   const current = getContent();
   for (const key of allowedKeys) {
+    if (key in incoming && JSON.stringify(incoming[key]).length > 100000) {
+      return res.status(400).json({ error: 'That section is too large.' });
+    }
     if (key in incoming) current[key] = incoming[key];
   }
   db.prepare('UPDATE site_content SET json = ? WHERE id = 1').run(JSON.stringify(current));
@@ -112,15 +135,40 @@ const uploadCert = multer({
   }
 });
 
+function hasPdfSignature(filePath) {
+  return fs.readFileSync(filePath).subarray(0, 4).toString('ascii') === '%PDF';
+}
+
+function hasImageSignature(filePath, mimetype) {
+  const header = fs.readFileSync(filePath).subarray(0, 12);
+  if (mimetype === 'image/jpeg') return header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff;
+  if (mimetype === 'image/png') return header.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+  if (mimetype === 'image/webp') return header.toString('ascii', 0, 4) === 'RIFF' && header.toString('ascii', 8, 12) === 'WEBP';
+  return false;
+}
+
 app.post('/api/certificates', requireAuth, uploadCert.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
   const { title, issuer } = req.body || {};
-  if (!title) return res.status(400).json({ error: 'Title is required.' });
+  if (!title) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'Title is required.' });
+  }
+  if (!hasPdfSignature(req.file.path)) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'The uploaded file is not a valid PDF.' });
+  }
 
   const maxOrder = db.prepare('SELECT COALESCE(MAX(sort_order), -1) AS m FROM certificates').get().m;
-  const info = db.prepare(
-    'INSERT INTO certificates (title, issuer, filename, original_name, sort_order) VALUES (?, ?, ?, ?, ?)'
-  ).run(title, issuer || '', req.file.filename, req.file.originalname, maxOrder + 1);
+  let info;
+  try {
+    info = db.prepare(
+      'INSERT INTO certificates (title, issuer, filename, original_name, sort_order) VALUES (?, ?, ?, ?, ?)'
+    ).run(title, issuer || '', req.file.filename, req.file.originalname, maxOrder + 1);
+  } catch (error) {
+    fs.unlinkSync(req.file.path);
+    throw error;
+  }
 
   res.json({ certificate: db.prepare('SELECT * FROM certificates WHERE id = ?').get(info.lastInsertRowid) });
 });
@@ -156,14 +204,21 @@ const uploadPhoto = multer({
 
 app.post('/api/photo', requireAuth, uploadPhoto.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+  if (!hasImageSignature(req.file.path, req.file.mimetype)) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'The uploaded file is not a valid image.' });
+  }
   const current = getContent();
 
-  if (current.photo) {
-    const oldPath = path.join(PHOTO_DIR, path.basename(current.photo));
-    fs.existsSync(oldPath) && fs.unlinkSync(oldPath);
-  }
+  const oldPath = current.photo ? path.join(PHOTO_DIR, path.basename(current.photo)) : null;
   current.photo = `/uploads/photo/${req.file.filename}`;
-  db.prepare('UPDATE site_content SET json = ? WHERE id = 1').run(JSON.stringify(current));
+  try {
+    db.prepare('UPDATE site_content SET json = ? WHERE id = 1').run(JSON.stringify(current));
+  } catch (error) {
+    fs.unlinkSync(req.file.path);
+    throw error;
+  }
+  if (oldPath && fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   res.json({ content: current });
 });
 

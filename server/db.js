@@ -117,6 +117,10 @@ function ensureSeed() {
 
   const userCount = db.prepare('SELECT COUNT(*) AS n FROM admin_users').get().n;
   if (userCount === 0) {
+    const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT_NAME);
+    if (isProduction && (!process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length < 12)) {
+      throw new Error('ADMIN_USERNAME and an ADMIN_PASSWORD of at least 12 characters are required in production.');
+    }
     const username = process.env.ADMIN_USERNAME || 'admin';
     const password = process.env.ADMIN_PASSWORD || 'change-this-password';
     const hash = bcrypt.hashSync(password, 10);

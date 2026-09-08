@@ -23,7 +23,8 @@ per-browser storage like `localStorage`; it is genuinely live for everyone.
 
 ## Running it locally
 
-You'll need [Node.js](https://nodejs.org) 18 or newer installed.
+You'll need [Node.js](https://nodejs.org) 22.5 or newer installed because the
+app uses Node's built-in `node:sqlite` module.
 
 1. Install dependencies:
    ```
@@ -67,9 +68,21 @@ run Node — not GitHub Pages. Reasonable free/cheap options:
 - A basic VPS (e.g. DigitalOcean) running Node directly behind Nginx, with
   `pm2` to keep the process alive.
 
-Whichever host you use, the important thing is a **persistent volume** for
-`server/data.sqlite` and `server/uploads/` — without it, every redeploy wipes
-her content and certificates back to the defaults.
+For Railway, mount a persistent volume at `/data` and set these variables:
+
+```
+NODE_ENV=production
+DB_PATH=/data/data.sqlite
+UPLOADS_DIR=/data/uploads
+ADMIN_USERNAME=your-admin-name
+ADMIN_PASSWORD=a-random-password-at-least-12-characters
+JWT_SECRET=a-random-secret-at-least-32-characters
+```
+
+Whichever host you use, the important thing is a **persistent volume** for the
+database and uploads — without it, every redeploy wipes her content and
+certificates back to the defaults. Check `GET /health` after deployment to
+confirm that the service is running.
 
 ## Editing content
 

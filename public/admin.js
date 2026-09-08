@@ -19,6 +19,18 @@ function showToast(msg, isError) {
   showToast._t = setTimeout(() => { toast.hidden = true; }, 3500);
 }
 
+function setBusy(button, busy, busyLabel) {
+  if (!button) return;
+  if (busy) {
+    button.dataset.originalLabel = button.textContent;
+    button.textContent = busyLabel;
+    button.disabled = true;
+  } else {
+    button.textContent = button.dataset.originalLabel || button.textContent;
+    button.disabled = false;
+  }
+}
+
 async function api(path, options = {}) {
   const headers = options.headers || {};
   const token = getToken();
@@ -45,10 +57,12 @@ function showDashboard() { loginScreen.hidden = true; dashboard.hidden = false; 
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const submitButton = e.currentTarget.querySelector('button[type="submit"]');
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   const errorEl = document.getElementById('loginError');
   errorEl.hidden = true;
+  setBusy(submitButton, true, 'Signing in...');
   try {
     const data = await api('/api/login', { method: 'POST', json: { username, password } });
     setToken(data.token);
@@ -56,6 +70,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   } catch (err) {
     errorEl.textContent = err.message;
     errorEl.hidden = false;
+  } finally {
+    setBusy(submitButton, false);
   }
 });
 
@@ -258,6 +274,7 @@ function renderCertList() {
 }
 
 document.getElementById('certUploadBtn').addEventListener('click', async () => {
+  const uploadButton = document.getElementById('certUploadBtn');
   const title = document.getElementById('certTitle').value.trim();
   const issuer = document.getElementById('certIssuer').value.trim();
   const fileInput = document.getElementById('certFile');
@@ -270,6 +287,7 @@ document.getElementById('certUploadBtn').addEventListener('click', async () => {
   formData.append('file', file);
 
   try {
+    setBusy(uploadButton, true, 'Uploading...');
     const token = getToken();
     const res = await fetch('/api/certificates', {
       method: 'POST',
@@ -286,12 +304,15 @@ document.getElementById('certUploadBtn').addEventListener('click', async () => {
     showToast('Certificate uploaded.');
   } catch (err) {
     showToast(err.message, true);
+  } finally {
+    setBusy(uploadButton, false);
   }
 });
 
 // ---------- Photo ----------
 
 document.getElementById('photoUploadBtn').addEventListener('click', async () => {
+  const uploadButton = document.getElementById('photoUploadBtn');
   const fileInput = document.getElementById('photoInput');
   const file = fileInput.files[0];
   if (!file) return showToast('Choose a photo first.', true);
@@ -305,6 +326,7 @@ document.getElementById('photoUploadBtn').addEventListener('click', async () => 
   const formData = new FormData();
   formData.append('file', file);
   try {
+    setBusy(uploadButton, true, 'Uploading...');
     const token = getToken();
     const res = await fetch('/api/photo', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
     const data = await res.json();
@@ -315,6 +337,8 @@ document.getElementById('photoUploadBtn').addEventListener('click', async () => 
     showToast('Photo updated — live on the site now.');
   } catch (err) {
     showToast(err.message, true);
+  } finally {
+    setBusy(uploadButton, false);
   }
 });
 
@@ -335,6 +359,7 @@ document.querySelectorAll('[data-save]').forEach(btn => {
   btn.addEventListener('click', async () => {
     const key = btn.dataset.save;
     let payload = {};
+    setBusy(btn, true, 'Saving...');
     try {
       if (key === 'sidebar') {
         payload.sidebar = {
@@ -368,13 +393,17 @@ document.querySelectorAll('[data-save]').forEach(btn => {
       showToast('Saved — live on the site now.');
     } catch (err) {
       showToast(err.message, true);
+    } finally {
+      setBusy(btn, false);
     }
   });
 });
 
 document.getElementById('changePwBtn').addEventListener('click', async () => {
+  const changeButton = document.getElementById('changePwBtn');
   const currentPassword = document.getElementById('pwCurrent').value;
   const newPassword = document.getElementById('pwNew').value;
+  setBusy(changeButton, true, 'Changing...');
   try {
     await api('/api/change-password', { method: 'POST', json: { currentPassword, newPassword } });
     document.getElementById('pwCurrent').value = '';
@@ -382,6 +411,8 @@ document.getElementById('changePwBtn').addEventListener('click', async () => {
     showToast('Password changed.');
   } catch (err) {
     showToast(err.message, true);
+  } finally {
+    setBusy(changeButton, false);
   }
 });
 

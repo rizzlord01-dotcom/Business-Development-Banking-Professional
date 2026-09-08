@@ -5,12 +5,19 @@
   const skipBtn = document.getElementById('splashSkip');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const duration = reduceMotion ? 800 : 5000;
-  const timer = setTimeout(() => splash.classList.add('hide'), duration);
+  const seenKey = 'lba_splash_seen';
+  let seen = false;
+  try { seen = localStorage.getItem(seenKey) === '1'; } catch {}
+  const duration = seen ? 0 : (reduceMotion ? 800 : 1800);
+  const timer = setTimeout(() => {
+    splash.classList.add('hide');
+    try { localStorage.setItem(seenKey, '1'); } catch {}
+  }, duration);
 
   function skip() {
     clearTimeout(timer);
     splash.classList.add('hide');
+    try { localStorage.setItem(seenKey, '1'); } catch {}
   }
 
   skipBtn.addEventListener('click', skip);
@@ -23,13 +30,20 @@
   const toggle = document.getElementById('navToggle');
   const sidebar = document.getElementById('sidebar');
 
-  toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+  function setOpen(open) {
+    sidebar.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  }
+
+  toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('open')));
   sidebar.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => sidebar.classList.remove('open'));
+    link.addEventListener('click', () => setOpen(false));
   });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
   document.addEventListener('click', (e) => {
     if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== toggle) {
-      sidebar.classList.remove('open');
+      setOpen(false);
     }
   });
 })();
@@ -160,8 +174,10 @@ function renderContact(sidebar, contact) {
 }
 
 async function loadSite() {
+  const status = document.getElementById('siteStatus');
   try {
     const res = await fetch('/api/content');
+    if (!res.ok) throw new Error('Portfolio content could not be loaded.');
     const { content, certificates } = await res.json();
     renderSidebar(content.sidebar);
     renderPhoto(content.photo);
@@ -171,8 +187,11 @@ async function loadSite() {
     renderEducation(content.education);
     renderCertificates(certificates);
     renderContact(content.sidebar, content.contact);
+    status.hidden = true;
   } catch (err) {
     console.error('Could not load site content:', err);
+    status.textContent = 'This portfolio is temporarily unavailable. Please refresh shortly.';
+    status.classList.add('error');
   }
 }
 
