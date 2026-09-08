@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Lady-Bisola Akinola Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <form id="loginForm" class="login-card">
+    <h1>Admin sign in</h1>
+    <p class="hint">Manage the live portfolio content.</p>
+    <label>Username
+      <input type="text" id="loginUsername" autocomplete="username" required>
+    </label>
+    <label>Password
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+    </label>
+    <p class="error" id="loginError" hidden></p>
+    <button type="submit">Sign in</button>
+    <a class="back-link" href="/">← Back to site</a>
+  </form>
+</div>
+
+<div id="dashboard" class="dashboard" hidden>
+  <header class="dash-header">
+    <div>
+      <h1>Portfolio admin</h1>
+      <p class="hint">Changes here go live on the site immediately.</p>
+    </div>
+    <div class="dash-header-actions">
+      <a href="/" target="_blank" rel="noopener">View live site ↗</a>
+      <button id="logoutBtn" class="ghost-btn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <p class="toast" id="toast" hidden></p>
+
+  <nav class="dash-nav">
+    <a href="#sec-photo">Photo</a>
+    <a href="#sec-profile">Profile</a>
+    <a href="#sec-hero">Hero &amp; clients</a>
+    <a href="#sec-experience">Experience</a>
+    <a href="#sec-competencies">Competencies</a>
+    <a href="#sec-education">Education</a>
+    <a href="#sec-certificates">Certificates</a>
+    <a href="#sec-contact">Contact</a>
+    <a href="#sec-security">Security</a>
+  </nav>
+
+  <section class="dash-card" id="sec-photo">
+    <h2>Corporate photo</h2>
+    <div class="photo-row">
+      <img id="photoPreview" class="photo-preview" alt="Current portrait" hidden>
+      <div class="photo-preview placeholder" id="photoPlaceholder">LBA</div>
+      <div>
+        <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp">
+        <div class="button-row">
+          <button id="photoUploadBtn" type="button">Upload photo</button>
+          <button id="photoRemoveBtn" type="button" class="ghost-btn">Remove photo</button>
+        </div>
+        <p class="hint">JPG, PNG or WEBP, up to 8MB. Square photos crop best.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="dash-card" id="sec-profile">
+    <h2>Profile &amp; sidebar</h2>
+    <label>Full name<input type="text" id="fName"></label>
+    <label>Role / title<input type="text" id="fRole"></label>
+    <label>Focus line<input type="text" id="fFocus"></label>
+    <label>Location<input type="text" id="fLocation"></label>
+    <label>Email<input type="email" id="fEmail"></label>
+    <label>Phone<input type="text" id="fPhone"></label>
+    <button type="button" class="save-btn" data-save="sidebar">Save profile</button>
+  </section>
+
+  <section class="dash-card" id="sec-hero">
+    <h2>Hero &amp; clients</h2>
+    <label>Section label<input type="text" id="fHeroLabel"></label>
+    <label>Profile paragraph<textarea id="fHeroLede" rows="5"></textarea></label>
+    <label>Clients served (one per line)<textarea id="fHeroClients" rows="4"></textarea></label>
+    <button type="button" class="save-btn" data-save="hero">Save hero</button>
+  </section>
+
+  <section class="dash-card" id="sec-experience">
+    <h2>Experience</h2>
+    <div id="experienceList"></div>
+    <button type="button" class="ghost-btn" id="addExperienceBtn">+ Add role</button>
+    <button type="button" class="save-btn" data-save="experience">Save experience</button>
+  </section>
+
+  <section class="dash-card" id="sec-competencies">
+    <h2>Core competencies</h2>
+    <div id="competencyList"></div>
+    <button type="button" class="ghost-btn" id="addCompetencyBtn">+ Add competency</button>
+    <button type="button" class="save-btn" data-save="competencies">Save competencies</button>
+  </section>
+
+  <section class="dash-card" id="sec-education">
+    <h2>Education</h2>
+    <div id="educationList"></div>
+    <button type="button" class="ghost-btn" id="addEducationBtn">+ Add entry</button>
+    <button type="button" class="save-btn" data-save="education">Save education</button>
+  </section>
+
+  <section class="dash-card" id="sec-certificates">
+    <h2>Certificates</h2>
+    <div id="certList" class="cert-admin-list"></div>
+    <div class="cert-upload">
+      <label>Title<input type="text" id="certTitle" placeholder="e.g. Trade Finance — Exam Course Certificate"></label>
+      <label>Issuer<input type="text" id="certIssuer" placeholder="e.g. International Business Management Institute"></label>
+      <label>PDF file<input type="file" id="certFile" accept="application/pdf"></label>
+      <button type="button" id="certUploadBtn">Upload certificate</button>
+    </div>
+  </section>
+
+  <section class="dash-card" id="sec-contact">
+    <h2>Contact section</h2>
+    <label>Blurb<textarea id="fContactBlurb" rows="3"></textarea></label>
+    <label>Address<input type="text" id="fContactAddress"></label>
+    <button type="button" class="save-btn" data-save="contact">Save contact</button>
+  </section>
+
+  <section class="dash-card" id="sec-security">
+    <h2>Security</h2>
+    <label>Current password<input type="password" id="pwCurrent"></label>
+    <label>New password (min. 8 characters)<input type="password" id="pwNew"></label>
+    <button type="button" id="changePwBtn">Change password</button>
+  </section>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

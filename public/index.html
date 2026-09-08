@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071525">
+<title>Lady-Bisola Akinola — Trade Finance &amp; Banking Professional</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23071525'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Georgia' font-size='11' fill='%23C4A35A'%3ELBA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<div id="splash" class="splash">
+  <div class="splash-inner">
+    <div class="splash-rule"></div>
+    <svg class="splash-seal" viewBox="0 0 130 130" aria-hidden="true">
+      <path id="splashArc" d="M 65,65 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0" fill="none"/>
+      <circle cx="65" cy="65" r="54" class="splash-ring splash-ring-halo"/>
+      <circle cx="65" cy="65" r="50" class="splash-ring splash-ring-outer"/>
+      <circle cx="65" cy="65" r="38" class="splash-ring splash-ring-inner"/>
+      <text class="splash-arc-text">
+        <textPath href="#splashArc" startOffset="2%">TRADE FINANCE  ·  RELATIONSHIP MANAGEMENT  ·  BANKING  ·  </textPath>
+      </text>
+      <text x="65" y="72" class="splash-mono" text-anchor="middle">LBA</text>
+    </svg>
+    <p class="splash-kicker">Portfolio</p>
+    <p class="splash-name">Lady-Bisola Akinola</p>
+    <div class="splash-rule"></div>
+  </div>
+  <button class="splash-skip" id="splashSkip" type="button">Skip intro</button>
+</div>
+
+<button class="nav-toggle" id="navToggle" aria-label="Open navigation">
+  <span></span><span></span><span></span>
+</button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-glow" aria-hidden="true"></div>
+
+  <div class="sidebar-top">
+    <div class="seal-frame" id="sealFrame">
+      <img class="portrait" id="portraitImg" alt="Portrait of Lady-Bisola Akinola" hidden>
+      <svg class="seal" viewBox="0 0 130 130" aria-hidden="true">
+        <path id="sealArc" d="M 65,65 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0" fill="none"/>
+        <circle cx="65" cy="65" r="54" class="seal-halo"/>
+        <circle cx="65" cy="65" r="38" class="seal-ring"/>
+        <text class="seal-text">
+          <textPath href="#sealArc" startOffset="2%">TRADE FINANCE  ·  RELATIONSHIP MANAGEMENT  ·  BANKING  ·  </textPath>
+        </text>
+        <text x="65" y="72" class="seal-mono" id="sealMono" text-anchor="middle">LBA</text>
+      </svg>
+    </div>
+
+    <p class="availability"><span class="avail-dot"></span> Open to conversations</p>
+    <h1 class="name-reveal" id="sidebarName">Lady-Bisola<br>Akinola</h1>
+    <p class="role" id="sidebarRole">Business Development &amp; Banking Professional</p>
+    <p class="focus" id="sidebarFocus">Trade Finance · Relationship Management · Sales</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#profile"><span>01</span> Profile</a>
+    <a href="#experience"><span>02</span> Experience</a>
+    <a href="#competencies"><span>03</span> Competencies</a>
+    <a href="#education"><span>04</span> Education</a>
+    <a href="#certificates"><span>05</span> Certificates</a>
+    <a href="#contact"><span>06</span> Contact</a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <p id="sidebarLocation">Lekki Scheme 2, Lagos</p>
+    <p><a id="sidebarEmail" href="#"></a></p>
+    <p><a id="sidebarPhone" href="#"></a></p>
+  </div>
+</aside>
+
+<main>
+
+  <section class="hero reveal" id="profile">
+    <div class="hero-mark" aria-hidden="true">LBA</div>
+    <p class="hero-kicker"><span id="heroLabel">Profile</span> · Lagos</p>
+    <p class="lede" id="heroLede"></p>
+
+    <div class="stats" id="statsRow"></div>
+
+    <div class="clients">
+      <span class="clients-label">Trade finance clients served</span>
+      <ul id="clientsList"></ul>
+    </div>
+  </section>
+
+  <section class="experience reveal" id="experience">
+    <div class="section-head">
+      <span class="section-index">02</span>
+      <h2>Experience</h2>
+    </div>
+    <div class="timeline" id="timelineList"></div>
+  </section>
+
+  <section class="competencies reveal" id="competencies">
+    <div class="section-head">
+      <span class="section-index">03</span>
+      <h2>Core Competencies</h2>
+    </div>
+    <div class="comp-grid" id="ledgerList"></div>
+  </section>
+
+  <section class="education reveal" id="education">
+    <div class="section-head">
+      <span class="section-index">04</span>
+      <h2>Education</h2>
+    </div>
+    <div class="edu-list" id="eduList"></div>
+  </section>
+
+  <section class="certificates reveal" id="certificates">
+    <div class="section-head">
+      <span class="section-index">05</span>
+      <h2>Certificates</h2>
+    </div>
+    <div class="cert-grid" id="certGrid"></div>
+    <p class="cert-empty" id="certEmpty" hidden>Certificates will be added here soon.</p>
+  </section>
+
+  <section class="contact reveal" id="contact">
+    <div class="contact-panel">
+      <p class="hero-kicker">Let’s talk</p>
+      <h2>Get in touch</h2>
+      <p id="contactBlurb"></p>
+      <div class="contact-links">
+        <a class="cta" id="contactEmail" href="#">Write an email</a>
+        <a class="cta ghost" id="contactPhone" href="#">Call</a>
+      </div>
+      <p class="location" id="contactAddress"></p>
+    </div>
+  </section>
+
+  <footer>
+    <p class="signature">Lady-Bisola Akinola</p>
+    <p class="footer-note">Trade finance · Relationship management · Lagos</p>
+  </footer>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

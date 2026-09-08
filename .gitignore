@@ -1,0 +1,9 @@
+node_modules/
+.env
+server/data.sqlite
+server/data.sqlite-wal
+server/data.sqlite-shm
+server/uploads/certificates/*.pdf
+server/uploads/photo/*.jpg
+server/uploads/photo/*.png
+server/uploads/photo/*.webp
