@@ -169,6 +169,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
   height: 106px;
   margin-bottom: 1.8rem;
   border-radius: 50%;
+  overflow: hidden;
   background: rgba(255,255,255,0.02);
   display: grid;
   place-items: center;
@@ -177,10 +178,11 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
 .portrait {
   position: absolute;
   inset: 12px;
-  width: auto;
-  height: auto;
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
   border-radius: 50%;
   object-fit: cover;
+  object-position: center;
   box-shadow: 0 0 0 2px rgba(224,193,123,0.45);
 }
 
