@@ -143,3 +143,62 @@ button:hover { background: #14294D; }
 }
 .cert-admin-item a { color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--gold); }
 .cert-upload { border-top: 1px dashed var(--rule); padding-top: 1rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.6rem; }
+
+@media (max-width: 560px) {
+  .login-screen {
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 340px;
+    padding: 1.5rem;
+    margin: auto;
+  }
+
+  .dashboard { padding: 1.25rem 0.85rem 3rem; }
+  .dash-header { gap: 0.75rem; }
+  .dash-header-actions { width: 100%; flex-wrap: wrap; }
+  .dash-header-actions button { margin-left: auto; }
+
+  .dash-nav {
+    gap: 0.55rem 0.8rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .dash-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .photo-row {
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .photo-row > div:last-child { width: 100%; }
+  .photo-row input[type="file"] { width: 100%; }
+
+  .button-row {
+    flex-wrap: wrap;
+  }
+
+  .button-row button,
+  .cert-upload button,
+  .save-btn { width: 100%; }
+
+  .repeat-row {
+    flex-direction: column;
+  }
+
+  .cert-admin-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cert-admin-item a {
+    overflow-wrap: anywhere;
+  }
+}
