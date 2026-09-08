@@ -16,7 +16,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-change-me';
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 const CERT_DIR = path.join(UPLOADS_DIR, 'certificates');
 const PHOTO_DIR = path.join(UPLOADS_DIR, 'photo');
 app.use('/uploads', express.static(UPLOADS_DIR));

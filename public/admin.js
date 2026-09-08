@@ -295,6 +295,13 @@ document.getElementById('photoUploadBtn').addEventListener('click', async () => 
   const fileInput = document.getElementById('photoInput');
   const file = fileInput.files[0];
   if (!file) return showToast('Choose a photo first.', true);
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    return showToast('Use a JPG, PNG, or WEBP image.', true);
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    return showToast('Photo must be 8MB or smaller.', true);
+  }
   const formData = new FormData();
   formData.append('file', file);
   try {
